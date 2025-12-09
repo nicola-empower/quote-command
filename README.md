@@ -1,5 +1,8 @@
 # Quote Command: Profit Protection for Trades 🔨
 
+<img width="2813" height="1514" alt="image" src="https://github.com/user-attachments/assets/75176f87-89df-44b0-a1f8-34b08751a11a" />
+
+
 > "From the back of a cigarette packet to data-driven revenue control."
 
 **Quote Command** is a mobile-first pricing engine designed specifically for independent tradespeople. It transforms the chaotic, manual process of estimating construction jobs into a standardized, margin-protected workflow.
