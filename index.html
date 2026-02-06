@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joinery - Smart Quote Command</title>
+    <title>Joinery - Quote Command v2.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -42,7 +42,6 @@
     <style>
         body { background-color: #f1f5f9; }
         
-        /* Chart Container (Mandatory) */
         .chart-container {
             position: relative;
             width: 100%;
@@ -64,6 +63,13 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
         }
+        
+        /* Chrome, Safari, Edge, Opera - Remove arrows from number inputs */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
     </style>
 </head>
 <body class="text-slate-800 antialiased">
@@ -75,34 +81,34 @@
             <div class="absolute top-0 right-0 p-12 opacity-5">
                 <i data-lucide="hammer" class="w-64 h-64"></i>
             </div>
-            <div class="max-w-7xl mx-auto flex justify-between items-end relative z-10">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end relative z-10 gap-6">
                 <div>
                     <div class="flex items-center gap-3 mb-2">
                         <div class="bg-brand-accent p-2 rounded-lg"><i data-lucide="calculator" class="w-6 h-6 text-white"></i></div>
-                        <span class="font-display text-brand-accent tracking-wider text-sm uppercase">Profit Engine v2.0</span>
+                        <span class="font-display text-brand-accent tracking-wider text-sm uppercase">Profit Engine v2.1</span>
                     </div>
                     <h1 class="text-4xl md:text-5xl font-display font-bold text-white mb-2">Quote Command</h1>
-                    <p class="text-slate-400 text-lg">Manage your joinery estimates with precision.</p>
+                    <p class="text-slate-400 text-lg">Detailed joinery estimates & manual overrides.</p>
                 </div>
-                <div class="hidden md:block text-right">
+                <div class="text-left md:text-right w-full md:w-auto">
                     <div class="text-sm text-slate-400 uppercase tracking-widest font-bold mb-1">Total Pipeline Value</div>
-                    <div class="text-4xl font-display font-bold text-brand-accent" id="header-total">£0.00</div>
+                    <div class="text-4xl md:text-5xl font-display font-bold text-brand-accent" id="header-total">£0.00</div>
                 </div>
             </div>
         </header>
 
         <!-- MAIN CONTENT -->
-        <!-- Added 'relative z-20' to ensure this sits ON TOP of the header's bottom curve -->
         <main class="relative z-20 max-w-7xl mx-auto px-4 -mt-16 grid lg:grid-cols-12 gap-8 pb-12 w-full">
 
-            <!-- LEFT: INPUT (4 cols) -->
-            <div class="lg:col-span-4 space-y-6">
+            <!-- LEFT: INPUT (5 cols for better spacing of new fields) -->
+            <div class="lg:col-span-5 space-y-6">
                 <div class="glass-card p-6 md:p-8 animate-slide-up">
                     <h2 class="text-xl font-display font-bold text-brand-dark mb-6 flex items-center gap-2">
                         <i data-lucide="plus-circle" class="w-5 h-5 text-brand-primary"></i> New Estimate
                     </h2>
                     
-                    <form id="quote-form" class="space-y-5">
+                    <form id="quote-form" class="space-y-4">
+                        <!-- Client Info -->
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Client / Job Reference</label>
                             <div class="relative">
@@ -111,58 +117,77 @@
                             </div>
                         </div>
 
+                        <!-- Core Costs -->
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Materials (£)</label>
-                                <input type="number" id="materials-cost" min="0" step="0.01" class="input-field w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20" placeholder="0.00" required>
+                                <input type="number" id="materials-cost" min="0" step="0.01" class="input-field w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-primary" placeholder="0.00" required>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Hours</label>
-                                <input type="number" id="labour-hours" min="0" step="0.5" class="input-field w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20" placeholder="0" required>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Profit Margin (%)</label>
+                                <input type="number" id="profit-margin" min="0" value="20" class="input-field w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-primary">
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Rate (£/hr)</label>
-                                <input type="number" id="hourly-rate" min="0" step="0.01" value="40" class="input-field w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20" required>
+                        <!-- Labour Selection (Hours or Days) -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-4">
+                            <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Labour Calculation</span>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Hours / Days</label>
+                                    <div class="flex gap-2">
+                                        <input type="number" id="labour-units" min="0" step="0.5" class="input-field w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-primary" placeholder="Qty">
+                                        <select id="labour-type" class="bg-white border border-slate-200 rounded-xl px-2 text-xs font-bold focus:outline-none">
+                                            <option value="hrs">Hrs</option>
+                                            <option value="days" selected>Days</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Rate (£)</label>
+                                    <input type="number" id="labour-rate" min="0" step="0.01" value="250" class="input-field w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-primary" placeholder="Rate">
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Margin (%)</label>
-                                <input type="number" id="profit-margin" min="0" value="20" class="input-field w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20" required>
-                            </div>
+                        </div>
+
+                        <!-- Manual Override -->
+                        <div class="relative">
+                            <label class="block text-xs font-bold text-brand-primary uppercase tracking-wider mb-1 flex items-center gap-2">
+                                Target Overall Quote (Ex VAT) <i data-lucide="info" class="w-3 h-3 cursor-help" title="Enter a manual total to calculate profit backwards"></i>
+                            </label>
+                            <input type="number" id="manual-total" min="0" step="0.01" class="input-field w-full px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:outline-none focus:border-brand-primary text-brand-dark font-bold placeholder:font-normal" placeholder="Optional: Manual total override">
                         </div>
 
                         <button type="submit" class="w-full bg-gradient-to-r from-brand-primary to-brand-accent hover:from-blue-600 hover:to-cyan-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/30 transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2">
-                            <i data-lucide="calculator" class="w-5 h-5"></i> Calculate & Add
+                            <i data-lucide="save" class="w-5 h-5"></i> Add Quote
                         </button>
                     </form>
                 </div>
 
                 <!-- Quick Stats Mini-Card -->
                 <div class="glass-card p-6 bg-brand-dark text-white">
-                    <h3 class="text-sm font-bold text-slate-400 uppercase mb-4">Efficiency Metrics</h3>
+                    <h3 class="text-sm font-bold text-slate-400 uppercase mb-4">Portfolio Analytics</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <div class="text-2xl font-display font-bold text-brand-accent" id="avg-margin">0%</div>
-                            <div class="text-xs text-slate-400">Avg. Margin</div>
+                            <div class="text-xs text-slate-400">Avg. Profit Margin</div>
                         </div>
                         <div>
                             <div class="text-2xl font-display font-bold text-white" id="total-jobs">0</div>
-                            <div class="text-xs text-slate-400">Active Jobs</div>
+                            <div class="text-xs text-slate-400">Total Estimates</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- RIGHT: DASHBOARD (8 cols) -->
-            <div class="lg:col-span-8 space-y-6">
+            <!-- RIGHT: DASHBOARD (7 cols) -->
+            <div class="lg:col-span-7 space-y-6">
                 
                 <!-- Analytics Section -->
                 <div class="grid md:grid-cols-2 gap-6">
                     <div class="glass-card p-6 flex flex-col">
-                        <h3 class="font-bold text-slate-700 mb-4 flex justify-between items-center">
-                            <span>Cost vs Profit Breakdown</span>
+                        <h3 class="font-bold text-slate-700 mb-4 flex justify-between items-center text-sm">
+                            <span>Portfolio Breakdown</span>
                             <i data-lucide="pie-chart" class="w-4 h-4 text-slate-400"></i>
                         </h3>
                         <div class="chart-container flex-1">
@@ -170,23 +195,20 @@
                         </div>
                     </div>
                     <div class="glass-card p-6 flex flex-col">
-                        <h3 class="font-bold text-slate-700 mb-4 flex justify-between items-center">
-                            <span>Recent Activity</span>
-                            <button id="export-csv" class="text-xs font-bold text-brand-primary hover:text-brand-dark flex items-center gap-1 px-3 py-1 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors">
-                                <i data-lucide="download" class="w-3 h-3"></i> CSV
+                        <h3 class="font-bold text-slate-700 mb-4 flex justify-between items-center text-sm">
+                            <span>Recent Estimates</span>
+                            <button id="export-csv" class="text-[10px] font-bold text-brand-primary hover:text-brand-dark flex items-center gap-1 px-3 py-1 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors uppercase tracking-tighter">
+                                <i data-lucide="download" class="w-3 h-3"></i> Export
                             </button>
                         </h3>
                         <!-- Empty State -->
                         <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-center py-10 opacity-50">
-                            <div class="bg-slate-100 p-4 rounded-full mb-3">
-                                <i data-lucide="clipboard-list" class="w-8 h-8 text-slate-400"></i>
-                            </div>
-                            <p class="text-sm font-medium text-slate-500">No quotes generated yet.</p>
-                            <p class="text-xs text-slate-400">Use the form to add your first job.</p>
+                            <i data-lucide="clipboard-list" class="w-8 h-8 text-slate-300 mb-2"></i>
+                            <p class="text-xs font-medium text-slate-400">No data found</p>
                         </div>
                         
                         <!-- List Container -->
-                        <div id="quote-list" class="hidden space-y-3 overflow-y-auto max-h-[250px] pr-2">
+                        <div id="quote-list" class="hidden space-y-2 overflow-y-auto max-h-[200px] pr-2">
                             <!-- Dynamic Items -->
                         </div>
                     </div>
@@ -195,25 +217,23 @@
                 <!-- Detailed Table -->
                 <div class="glass-card overflow-hidden">
                     <div class="px-6 py-4 border-b border-slate-100 bg-white/50 flex justify-between items-center">
-                        <h3 class="font-bold text-slate-700">Detailed Breakdown</h3>
-                        <div class="flex gap-2">
-                             <span class="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded font-bold">VAT: 20%</span>
-                        </div>
+                        <h3 class="font-bold text-slate-700 text-sm">Quote Ledger</h3>
+                        <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded font-bold uppercase tracking-widest">VAT: 20%</span>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left">
-                            <thead class="bg-slate-50 text-xs uppercase font-bold text-slate-500">
+                            <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                                 <tr>
-                                    <th class="px-6 py-4">Client</th>
-                                    <th class="px-6 py-4 text-right">Materials</th>
-                                    <th class="px-6 py-4 text-right">Labour</th>
-                                    <th class="px-6 py-4 text-right text-brand-primary">Profit</th>
-                                    <th class="px-6 py-4 text-right font-bold text-slate-800">Total (Inc VAT)</th>
-                                    <th class="px-6 py-4"></th>
+                                    <th class="px-6 py-4">Job / Client</th>
+                                    <th class="px-6 py-4 text-right">Costs</th>
+                                    <th class="px-6 py-4 text-right">Profit</th>
+                                    <th class="px-6 py-4 text-right">Margin</th>
+                                    <th class="px-6 py-4 text-right text-slate-800">Total (Inc VAT)</th>
+                                    <th class="px-4 py-4"></th>
                                 </tr>
                             </thead>
                             <tbody id="quote-table-body" class="divide-y divide-slate-100">
-                                <!-- Rows -->
+                                <!-- Dynamic Rows -->
                             </tbody>
                         </table>
                     </div>
@@ -250,36 +270,55 @@
             
             // 1. Get Values
             const client = document.getElementById('client-name').value;
-            const matCost = parseFloat(document.getElementById('materials-cost').value);
-            const hours = parseFloat(document.getElementById('labour-hours').value);
-            const rate = parseFloat(document.getElementById('hourly-rate').value);
-            const margin = parseFloat(document.getElementById('profit-margin').value);
+            const matCost = parseFloat(document.getElementById('materials-cost').value) || 0;
+            const units = parseFloat(document.getElementById('labour-units').value) || 0;
+            const rate = parseFloat(document.getElementById('labour-rate').value) || 0;
+            const marginInput = parseFloat(document.getElementById('profit-margin').value) || 0;
+            const manualTotal = parseFloat(document.getElementById('manual-total').value);
 
-            // 2. Calculate
-            const labourCost = hours * rate;
+            // 2. Base Labour
+            const labourCost = units * rate;
             const subtotalCost = matCost + labourCost;
-            const profit = subtotalCost * (margin / 100);
-            const netTotal = subtotalCost + profit;
-            const vat = netTotal * 0.20;
-            const grandTotal = netTotal + vat;
 
-            // 3. Create Object
+            let finalNet, finalProfit, finalMargin;
+
+            // 3. Logic for Manual Override vs Bottom-Up
+            if (!isNaN(manualTotal) && manualTotal > 0) {
+                // Manual Override Mode
+                finalNet = manualTotal;
+                finalProfit = finalNet - subtotalCost;
+                finalMargin = subtotalCost > 0 ? (finalProfit / subtotalCost) * 100 : 100;
+            } else {
+                // Percentage Calculation Mode
+                finalProfit = subtotalCost * (marginInput / 100);
+                finalNet = subtotalCost + finalProfit;
+                finalMargin = marginInput;
+            }
+
+            const vat = finalNet * 0.20;
+            const grandTotal = finalNet + vat;
+
+            // 4. Create Object
             const quote = {
                 id: Date.now(),
                 client,
                 matCost,
                 labourCost,
-                profit,
+                profit: finalProfit,
                 grandTotal,
-                margin
+                margin: finalMargin,
+                units,
+                unitType: document.getElementById('labour-type').value
             };
 
-            // 4. Update State
-            quotes.unshift(quote); // Add to top
+            // 5. Update State
+            quotes.unshift(quote);
             updateUI();
             form.reset();
-            // Keep defaults
-            document.getElementById('hourly-rate').value = 40;
+            
+            // Re-apply defaults
+            document.getElementById('labour-type').value = 'days';
+            document.getElementById('labour-rate').value = 250;
             document.getElementById('profit-margin').value = 20;
         });
 
@@ -290,7 +329,6 @@
 
         // --- RENDERING ---
         function updateUI() {
-            // 1. Toggle Empty State
             if (quotes.length > 0) {
                 emptyState.classList.add('hidden');
                 listContainer.classList.remove('hidden');
@@ -299,11 +337,9 @@
                 listContainer.classList.add('hidden');
             }
 
-            // 2. Render Lists & Tables
             renderList();
             renderTable();
             
-            // 3. Update Stats
             const totalValue = quotes.reduce((sum, q) => sum + q.grandTotal, 0);
             headerTotal.innerText = formatGBP(totalValue);
             totalJobsDisplay.innerText = quotes.length;
@@ -311,29 +347,26 @@
             const avgM = quotes.length ? (quotes.reduce((sum, q) => sum + q.margin, 0) / quotes.length).toFixed(1) : 0;
             avgMarginDisplay.innerText = avgM + '%';
 
-            // 4. Update Chart
             updateChart();
-            
             lucide.createIcons();
         }
 
         function renderList() {
             listContainer.innerHTML = '';
-            // Only show top 4 recent
-            quotes.slice(0, 4).forEach(q => {
+            quotes.slice(0, 5).forEach(q => {
                 const div = document.createElement('div');
-                div.className = 'bg-white border border-slate-100 p-3 rounded-xl flex justify-between items-center hover:shadow-md transition-shadow';
+                div.className = 'bg-white border border-slate-100 p-3 rounded-xl flex justify-between items-center hover:shadow-sm transition-all';
                 div.innerHTML = `
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-brand-primary font-bold text-xs">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-brand-primary font-bold text-[10px]">
                             ${q.client.substring(0,2).toUpperCase()}
                         </div>
                         <div>
-                            <div class="font-bold text-sm text-slate-700">${q.client}</div>
-                            <div class="text-xs text-slate-400">Profit: ${formatGBP(q.profit)}</div>
+                            <div class="font-bold text-xs text-slate-700">${q.client}</div>
+                            <div class="text-[10px] text-slate-400">${q.units} ${q.unitType} labour</div>
                         </div>
                     </div>
-                    <div class="font-display font-bold text-slate-800">${formatGBP(q.grandTotal)}</div>
+                    <div class="font-display font-bold text-sm text-slate-800">${formatGBP(q.grandTotal)}</div>
                 `;
                 listContainer.appendChild(div);
             });
@@ -345,12 +378,25 @@
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-slate-50 transition-colors group';
                 tr.innerHTML = `
-                    <td class="px-6 py-4 font-medium text-slate-800">${q.client}</td>
-                    <td class="px-6 py-4 text-right text-slate-500">${formatGBP(q.matCost)}</td>
-                    <td class="px-6 py-4 text-right text-slate-500">${formatGBP(q.labourCost)}</td>
-                    <td class="px-6 py-4 text-right font-bold text-emerald-600">+${formatGBP(q.profit)}</td>
-                    <td class="px-6 py-4 text-right font-display font-bold text-slate-900">${formatGBP(q.grandTotal)}</td>
+                    <td class="px-6 py-4">
+                        <div class="font-medium text-slate-800">${q.client}</div>
+                        <div class="text-[10px] text-slate-400">${q.units} ${q.unitType} @ ${formatGBP(q.labourCost/q.units)}</div>
+                    </td>
+                    <td class="px-6 py-4 text-right text-slate-500 font-mono text-xs">
+                        ${formatGBP(q.matCost + q.labourCost)}
+                    </td>
+                    <td class="px-6 py-4 text-right font-bold text-emerald-600">
+                        +${formatGBP(q.profit)}
+                    </td>
                     <td class="px-6 py-4 text-right">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${q.margin >= 20 ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}">
+                            ${q.margin.toFixed(1)}%
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right font-display font-bold text-slate-900">
+                        ${formatGBP(q.grandTotal)}
+                    </td>
+                    <td class="px-4 py-4 text-right">
                         <button onclick="deleteQuote(${q.id})" class="text-slate-300 hover:text-red-500 transition-colors">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
@@ -360,11 +406,8 @@
             });
         }
 
-        // --- CHART.JS LOGIC ---
         function updateChart() {
             const ctx = document.getElementById('breakdownChart').getContext('2d');
-            
-            // Aggregate Data
             const totalMat = quotes.reduce((sum, q) => sum + q.matCost, 0);
             const totalLab = quotes.reduce((sum, q) => sum + q.labourCost, 0);
             const totalProf = quotes.reduce((sum, q) => sum + q.profit, 0);
@@ -373,9 +416,9 @@
                 labels: ['Materials', 'Labour', 'Profit'],
                 datasets: [{
                     data: [totalMat, totalLab, totalProf],
-                    backgroundColor: ['#94a3b8', '#3b82f6', '#06b6d4'], // Slate, Blue, Cyan
+                    backgroundColor: ['#cbd5e1', '#3b82f6', '#10b981'],
                     borderWidth: 0,
-                    hoverOffset: 4
+                    hoverOffset: 10
                 }]
             };
 
@@ -389,17 +432,12 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        cutout: '70%',
+                        cutout: '75%',
                         plugins: {
-                            legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } },
+                            legend: { position: 'bottom', labels: { usePointStyle: true, font: { size: 10, family: 'Outfit' }, padding: 15 } },
                             tooltip: {
                                 callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        if (label) label += ': ';
-                                        if (context.parsed !== null) label += formatGBP(context.parsed);
-                                        return label;
-                                    }
+                                    label: (ctx) => `${ctx.label}: ${formatGBP(ctx.parsed)}`
                                 }
                             }
                         }
@@ -408,20 +446,17 @@
             }
         }
 
-        // --- CSV EXPORT ---
         exportBtn.addEventListener('click', () => {
-            if (quotes.length === 0) return alert("No data to export!");
-            
-            let csv = "Client,Materials,Labour Cost,Profit,Total (Inc VAT)\n";
+            if (quotes.length === 0) return;
+            let csv = "Client,Materials,Labour,Profit,Margin%,Total(Inc VAT)\n";
             quotes.forEach(q => {
-                csv += `"${q.client}",${q.matCost},${q.labourCost},${q.profit},${q.grandTotal}\n`;
+                csv += `"${q.client}",${q.matCost},${q.labourCost},${q.profit},${q.margin.toFixed(2)}%,${q.grandTotal}\n`;
             });
-
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'cgh_quotes.csv';
+            a.download = `joinery_quotes_${new Date().toISOString().split('T')[0]}.csv`;
             a.click();
         });
 
