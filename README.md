@@ -1,64 +1,64 @@
-# Quote Command: Profit Protection for Trades 🔨
+# Quote Command: Profit Protection & Logistics for Trades 🔨
 
-<img width="2813" height="1514" alt="image" src="https://github.com/user-attachments/assets/75176f87-89df-44b0-a1f8-34b08751a11a" />
+<img width="2813" height="1514" alt="Quote Command Dashboard" src="https://github.com/user-attachments/assets/75176f87-89df-44b0-a1f8-34b08751a11a" />
 
+> "Moving from sawdust-covered notes to digital precision."
 
-> "From the back of a cigarette packet to data-driven revenue control."
+**Quote Command** is a mobile-first pricing and logistics engine designed specifically for independent tradespeople. It transforms the chaotic, manual process of estimating construction jobs into a standardised, margin-protected workflow.
 
-**Quote Command** is a mobile-first pricing engine designed specifically for independent tradespeople. It transforms the chaotic, manual process of estimating construction jobs into a standardized, margin-protected workflow.
+## 🚩 The Problem: "The Admin Bottleneck"
 
----
-
-## 🚩 The Problem: "The Friday Night Slog"
-
-For independent joiners and tradespeople, quoting is often the bottleneck of the business. My client spends one full day a week on the road visiting potential clients, collecting measurements in a notebook.
+For independent joiners and tradespeople, quoting and material ordering are often the biggest time-sinks. My client spends significant time on the road, balancing notebooks, loose scraps of paper, and mental "guesstimates."
 
 ### The Pain Points
-* **Batch Overload:** Returning home with 10+ quotes to type up manually takes hours of personal evening time.
-* **Margin Drift:** "Guesstimating" labour hours or forgetting small materials (screws, glue) eats into profit.
-* **Repetitive Strain:** Starting from zero for every client (re-entering hourly rates/VAT) is inefficient.
 
----
+* **Batch Overload:** Returning home with 10+ quotes to type up manually takes hours of personal time.
+* **Margin Drift:** Forgetting small fixings or underestimating labour eats into the weekend's profit.
+* **Logistical Chaos:** Handwritten material lists are easily lost or misread at the merchant's counter.
 
-## 🚀 The Solution
+## 🚀 The Solution: A Digital Daybook
 
-Quote Command is a **Single Page Application (SPA)** that acts as a "Digital Daybook." It allows the user to rapidly stack multiple quotes while on the road, visualising profit margins in real-time, and exporting the entire batch for processing.
+Quote Command is a **Single Page Application (SPA)** that acts as a comprehensive "Digital Daybook." It allows users to rapidly stack quotes and generate material orders while on-site.
 
 ### Key Features
-* **🚀 Rapid Batch Entry:** Core settings (Hourly Rate, Profit Margin) persist between quotes. You only input the variables for the new job.
-* **🧮 Dynamic Profit Engine:** Automatically calculates Net Cost, Profit Markup (e.g., 20%), and VAT (20%) instantly.
-* **📊 Visual Health Check:** Dynamic Donut Charts (Chart.js) visualise the Labour vs. Materials split, ensuring no job is accepted with thin margins.
-* **📂 CSV Batch Export:** One-click export of all pending quotes into a structured CSV file, ready for import into Xero, QuickBooks, or Google Sheets.
 
----
+* **🧮 Hybrid Labour Engine:** Support for both Hourly and Day rates. Tradespeople can toggle based on how they prefer to bill.
+* **🎯 Target Quote Mode:** A "work-backwards" feature. Enter a manual total price, and the engine instantly calculates the resulting profit and margin based on costs.
+* **🛒 Smart Materials List:** A dedicated tab for building shop lists. Includes "Quick Add" buttons for common site items (OSB, Postcrete, Fixings) to minimize typing.
+* **🖨️ Merchant-Ready Export:** Generates a clean, high-contrast PDF/Print view of the materials list, complete with checkboxes for the merchant to tick off during loading.
+* **📂 CSV Batch Export:** One-click export of all pending quotes for seamless integration with accounting software like Xero or QuickBooks.
 
 ## 🛠️ Technical Implementation
 
-This project follows a **Local-First** architecture for speed and reliability in low-signal areas (construction sites).
+Built with a **Local-First** philosophy to ensure the app remains functional on-site, even with poor signal.
 
 ### Tech Stack
-![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white) ![Chart.js](https://img.shields.io/badge/chart.js-F5788D.svg?style=for-the-badge&logo=chart.js&logoColor=white)
 
 * **Core:** HTML5, Vanilla JavaScript (ES6+)
-* **Styling:** Tailwind CSS (Utility-first for rapid UI development)
-* **Visualization:** Chart.js (Canvas-based rendering for smooth mobile performance)
-* **Icons:** Lucide Icons
+* **Styling:** Tailwind CSS (Utility-first for a rugged, mobile-responsive UI)
+* **Visualisation:** Chart.js for real-time cost vs. profit breakdowns.
+* **Icons:** Lucide Icons.
 
-### Architecture Highlight: The "Bridge" Workflow
-This app serves as the input terminal for a larger automation chain:
-1.  **Input:** User logs 10 quotes on the road via the App.
-2.  **Export:** Generates `cgh_quotes.csv`.
-3.  **Automation:** CSV is imported to Google Sheets, where a backend **Google Apps Script** triggers the generation of PDF invoices.
+### The "Bridge" Workflow
 
----
+This app acts as the frontline terminal for a larger automation ecosystem:
+
+1. **Capture:** User logs quotes and material needs via the mobile SPA.
+2. **Order:** Materials list is printed/PDF'd to the merchant.
+3. **Automate:** CSV export triggers a **Google Apps Script** backend to generate formal PDF invoices and update financial trackers.
 
 ## 🚀 Getting Started
 
-This is a lightweight, client-side application. No build step or server is required to test the prototype.
+No build step or server is required. This is a lightweight, client-side application.
 
 ### Prerequisites
-A modern web browser (Chrome, Safari, Firefox, Edge).
+
+A modern web browser (Optimised for Safari/iOS and Chrome/Android).
 
 ### View the Demo
 
-   (https://nicola-empower.github.io/quote-command/)
+<https://nicola-empower.github.io/quote-command/>
+
+### Built by [Nicola Berry](https://empowerdigitalsolutions.co.uk)
+
+**Empower Digital Solutions** | *Bespoke Web Applications & Automation*
